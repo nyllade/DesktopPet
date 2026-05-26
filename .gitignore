@@ -1,0 +1,9 @@
+.DS_Store
+index.html
+
+# Generated app binary and signing output.
+DesktopPet/DesktopPet.app/Contents/MacOS/DesktopPet
+DesktopPet/DesktopPet.app/Contents/_CodeSignature/
+
+# Local build products.
+DesktopPet/Build/
