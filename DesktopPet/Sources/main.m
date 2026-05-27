@@ -168,6 +168,7 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 @property CGFloat petScale;
 @property CGFloat tick;
 @property CGFloat actionPulse;
+@property CGFloat shakePulse;
 @property CGFloat thoughtAlpha;
 @property CGFloat behaviorUntil;
 @property CGFloat nextAutonomy;
@@ -186,6 +187,7 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 @property NSPoint dragStart;
 @property NSPoint clickStart;
 @property NSPoint dragStartOnScreen;
+@property NSPoint lastDragScreenPoint;
 @property NSPoint cursorWindowPoint;
 @property NSRect originalFrame;
 @property NSRect targetFrame;
@@ -276,6 +278,7 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 - (void)animateFrame {
     self.tick += 1.0 / 60.0;
     self.actionPulse = MAX(0, self.actionPulse - 0.024);
+    self.shakePulse = MAX(0, self.shakePulse - 0.045);
     self.thoughtAlpha = MAX(0, self.thoughtAlpha - 0.006);
     self.behaviorUntil = MAX(0, self.behaviorUntil - 1.0 / 60.0);
     self.nextContextCheck -= 1.0 / 60.0;
@@ -420,6 +423,7 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     self.clickStart = event.locationInWindow;
     self.dragStart = self.clickStart;
     self.dragStartOnScreen = NSEvent.mouseLocation;
+    self.lastDragScreenPoint = self.dragStartOnScreen;
     self.originalFrame = self.window.frame;
     self.targetFrame = self.originalFrame;
     self.dragging = NSPointInRect(self.dragStart, NSInsetRect([self spriteBaseRect], -28, -28));
@@ -431,6 +435,12 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 - (void)mouseDragged:(NSEvent *)event {
     if (!self.dragging || !self.window) return;
     NSPoint current = NSEvent.mouseLocation;
+    CGFloat dragDistance = hypot(current.x - self.lastDragScreenPoint.x, current.y - self.lastDragScreenPoint.y);
+    if (dragDistance > 14) {
+        self.shakePulse = Clamp(self.shakePulse + dragDistance / 120.0, 0, 1);
+    }
+    self.lastDragScreenPoint = current;
+
     NSRect frame = self.originalFrame;
     frame.origin.x += current.x - self.dragStartOnScreen.x;
     frame.origin.y += current.y - self.dragStartOnScreen.y;
@@ -731,6 +741,14 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
         extraY += sin((1 - self.actionPulse) * M_PI) * 34.0;
         scaleX += self.actionPulse * 0.04;
         scaleY -= self.actionPulse * 0.035;
+    }
+
+    if (self.shakePulse > 0.01) {
+        CGFloat shake = sin(self.tick * 34.0) * self.shakePulse;
+        rotation += shake * 7.0;
+        extraY += cos(self.tick * 42.0) * self.shakePulse * 2.6;
+        scaleX += self.shakePulse * 0.025;
+        scaleY -= self.shakePulse * 0.018;
     }
 
     [self drawShadowBelow:rect lift:extraY];
