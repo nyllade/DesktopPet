@@ -12,11 +12,11 @@ DesktopPet is a lightweight native macOS desktop companion built with AppKit. It
   - Ossia Nocturne
   - Velvet Howl
   - Mochi Cloudlet
-- Right-click menu for character, mode, size, reset, AI thoughts, and quit.
+- Right-click menu for character, mode, size, settings, reset, and quit.
 - Modes: Companion, Study Focus, Do Not Disturb.
 - Character-specific speech style for clicks, double-clicks, focus, attention, app context, and cursor petting.
 - Smooth drag behavior with screen-edge clamping.
-- Optional OpenAI-powered thoughts using app metadata only, no screenshots.
+- Local rule-based thoughts using app context, mood, memory, time of day, and character voice.
 
 ## Build
 
@@ -36,11 +36,27 @@ DesktopPet/DesktopPet.app
 open DesktopPet/DesktopPet.app
 ```
 
-## Optional AI Thoughts
+## Local Companion Logic
 
-AI thoughts are off by default. If enabled in the menu, the app looks for an API key in either:
+DesktopPet currently uses local, rule-based companion behavior. It tracks mode, mood, focus time, idle returns, comfort, bond, app context, and character personality lines without sending anything to an external API.
 
-- `NSUserDefaults` key `OpenAIAPIKey`
-- environment variable `OPENAI_API_KEY`
+## Windows Version
 
-The current implementation sends only lightweight context such as active app name, mode, mood, bond, energy, and idle time. It does not send screenshots.
+A native Windows/WPF version lives in:
+
+```text
+WindowsPet/
+```
+
+On Windows with the .NET 8 SDK:
+
+```powershell
+cd WindowsPet
+dotnet run
+```
+
+To publish a standalone Windows build:
+
+```powershell
+.\build-windows.ps1
+```

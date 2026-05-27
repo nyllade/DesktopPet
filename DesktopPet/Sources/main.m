@@ -54,7 +54,10 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
             @"mail": @[@"letters passing by", @"mail moon crossing"],
             @"calendar": @[@"time has little doors", @"calendar orbit marked"],
             @"about": @[@"desk familiar", @"small night guardian"],
-            @"arrive": @[@"Nebula slipped in", @"night paws landed"]
+            @"arrive": @[@"Nebula slipped in", @"night paws landed"],
+            @"proud": @[@"focus star earned", @"orbit getting brighter"],
+            @"flick": @[@"whoosh through space", @"tiny gravity ride"],
+            @"memory": @[@"I remember this", @"orbit note saved"]
         },
         @"pippaOrbitpaw": @{
             @"click": @[@"scan complete", @"hi hi signal", @"curiosity ping"],
@@ -72,7 +75,10 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
             @"mail": @[@"message meteor shower", @"mail signal spotted"],
             @"calendar": @[@"time map updated", @"schedule coordinates set"],
             @"about": @[@"alien scout", @"chief tiny investigator"],
-            @"arrive": @[@"Pippa beamed in", @"scout has landed"]
+            @"arrive": @[@"Pippa beamed in", @"scout has landed"],
+            @"proud": @[@"focus data logged", @"excellent mission"],
+            @"flick": @[@"rocket paws!", @"trajectory accepted"],
+            @"memory": @[@"sample saved", @"noted for science"]
         },
         @"lumaMoppet": @{
             @"click": @[@"an audience!", @"spotlight, please", @"tiny gasp"],
@@ -90,7 +96,10 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
             @"mail": @[@"letters from the wings", @"mailroom melodrama"],
             @"calendar": @[@"act two scheduled", @"time takes a bow"],
             @"about": @[@"dramatic snack ghost", @"tiny stage spirit"],
-            @"arrive": @[@"Luma takes stage", @"curtain shimmer"]
+            @"arrive": @[@"Luma takes stage", @"curtain shimmer"],
+            @"proud": @[@"brilliant scene", @"standing ovation"],
+            @"flick": @[@"dramatic exit!", @"stage spin!"],
+            @"memory": @[@"scene recorded", @"a memorable act"]
         },
         @"ossiaNocturne": @{
             @"click": @[@"I am watching", @"quietly here", @"blue flame steady"],
@@ -108,7 +117,10 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
             @"mail": @[@"letters at the gate", @"messages watched"],
             @"calendar": @[@"time is marked", @"omens scheduled"],
             @"about": @[@"gothic desk guardian", @"moonlit little sentinel"],
-            @"arrive": @[@"Ossia appears", @"blue ward lit"]
+            @"arrive": @[@"Ossia appears", @"blue ward lit"],
+            @"proud": @[@"ward held strong", @"discipline glows"],
+            @"flick": @[@"shadow sweep", @"cloak flutter"],
+            @"memory": @[@"omen remembered", @"marked in blue"]
         },
         @"velvetHowl": @{
             @"click": @[@"you came!", @"tail-heart wag", @"best cursor"],
@@ -126,7 +138,10 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
             @"mail": @[@"mail sniff sniff", @"letters have feelings"],
             @"calendar": @[@"plans? I help", @"time for us too"],
             @"about": @[@"heart-powered puppy", @"loyal little comet"],
-            @"arrive": @[@"Velvet bounded in", @"heart paws landed"]
+            @"arrive": @[@"Velvet bounded in", @"heart paws landed"],
+            @"proud": @[@"good focus!", @"proud tail wag"],
+            @"flick": @[@"zoomie launch!", @"wheee paws"],
+            @"memory": @[@"heart remembers", @"saved with love"]
         },
         @"mochiCloudlet": @{
             @"click": @[@"soft hello", @"cloudlet peeks", @"tiny warm puff"],
@@ -144,7 +159,10 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
             @"mail": @[@"letters on breeze", @"mail cloud passing"],
             @"calendar": @[@"time floats softly", @"plans tucked in"],
             @"about": @[@"soft cloud familiar", @"shy little woolstar"],
-            @"arrive": @[@"Mochi drifted in", @"cloudlet landed softly"]
+            @"arrive": @[@"Mochi drifted in", @"cloudlet landed softly"],
+            @"proud": @[@"soft focus bloom", @"you did gently"],
+            @"flick": @[@"cloud puff!", @"soft tumble"],
+            @"memory": @[@"warmth saved", @"tucked in memory"]
         }
     };
 }
@@ -163,8 +181,16 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 @property CGFloat curiosity;
 @property CGFloat attentionNeed;
 @property CGFloat trust;
+@property CGFloat comfort;
 @property CGFloat focusAffinity;
+@property CGFloat motionIntensity;
+@property CGFloat focusSessionSeconds;
+@property CGFloat bestFocusSeconds;
+@property CGFloat dailyStudySeconds;
+@property CGFloat dailyPetCount;
+@property CGFloat dailyReturnCount;
 @property NSInteger focusStreak;
+@property NSInteger appSwitches;
 @property CGFloat petScale;
 @property CGFloat tick;
 @property CGFloat actionPulse;
@@ -175,7 +201,7 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 @property CGFloat behaviorUntil;
 @property CGFloat nextAutonomy;
 @property CGFloat nextContextCheck;
-@property CGFloat nextAIThought;
+@property CGFloat nextAutonomousThought;
 @property CGFloat lastInteractionAt;
 @property CGFloat lastMemoryAt;
 @property CGFloat lastPetAngle;
@@ -185,10 +211,9 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 @property CGFloat lastDragAngle;
 @property CGFloat dragAngleTotal;
 @property BOOL dragging;
-@property BOOL aiEnabled;
-@property BOOL aiRequestInFlight;
 @property BOOL hasPetAngle;
 @property BOOL hasDragAngle;
+@property BOOL wasIdleAway;
 @property NSPoint dragStart;
 @property NSPoint clickStart;
 @property NSPoint dragStartOnScreen;
@@ -201,11 +226,13 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 @property (copy) NSString *thought;
 @property (copy) NSString *characterId;
 @property (copy) NSString *activeAppName;
+@property (copy) NSString *lastActiveAppName;
 @property (copy) NSString *dayPhase;
-@property (copy) NSString *lastAIThought;
+@property (copy) NSString *dailyKey;
 @property (strong) NSImage *sprite;
 @property (strong) NSTimer *timer;
 @property (strong) NSTrackingArea *trackingArea;
+@property (strong) NSPanel *settingsPanel;
 @property (strong) NSMutableArray<NSMutableDictionary *> *particles;
 @property (strong) NSMutableArray<NSDictionary *> *memories;
 @end
@@ -222,7 +249,9 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     self.curiosity = 45;
     self.attentionNeed = 18;
     self.trust = 8;
+    self.comfort = 72;
     self.focusAffinity = 0;
+    self.motionIntensity = 1.0;
     self.focusStreak = 0;
     self.petScale = 0.55;
     self.mode = @"companion";
@@ -230,15 +259,15 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     self.thought = @"";
     self.characterId = @"nebulaNix";
     self.activeAppName = @"Unknown";
+    self.lastActiveAppName = @"Unknown";
     self.dayPhase = @"day";
-    self.lastAIThought = @"";
+    self.dailyKey = @"";
     self.particles = [NSMutableArray array];
     self.memories = [NSMutableArray array];
     self.nextAutonomy = Rand(120, 300);
     self.nextContextCheck = 0;
-    self.nextAIThought = Rand(180, 360);
+    self.nextAutonomousThought = Rand(180, 360);
     self.lastInteractionAt = NSDate.date.timeIntervalSince1970;
-    self.aiEnabled = NO;
     [self loadState];
     [self refreshContext];
     [self loadSprite];
@@ -288,10 +317,11 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     self.thoughtAlpha = MAX(0, self.thoughtAlpha - 0.006);
     self.behaviorUntil = MAX(0, self.behaviorUntil - 1.0 / 60.0);
     self.nextContextCheck -= 1.0 / 60.0;
-    self.nextAIThought -= 1.0 / 60.0;
+    self.nextAutonomousThought -= 1.0 / 60.0;
 
     if (self.nextContextCheck <= 0) {
         [self refreshContext];
+        [self updateReturnAwareness];
         self.nextContextCheck = 8.0;
     }
     [self updateParticles];
@@ -306,13 +336,31 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
         CGFloat idleMinutes = [self idleSeconds] / 60.0;
         if ([self.mode isEqualToString:@"study"]) {
             self.energy = Clamp(self.energy - 0.18, 0, 100);
+            self.focusSessionSeconds += 5;
+            self.dailyStudySeconds += 5;
             self.focusStreak += 5;
             self.focusAffinity = Clamp(self.focusAffinity + 0.12, 0, 100);
             self.attentionNeed = Clamp(self.attentionNeed - 0.18, 0, 100);
+            self.comfort = Clamp(self.comfort + 0.08, 0, 100);
+            if ((NSInteger)self.focusSessionSeconds % 300 == 0) {
+                self.bestFocusSeconds = MAX(self.bestFocusSeconds, self.focusSessionSeconds);
+                self.actionPulse = 0.75;
+                [self burst:@"star" count:6];
+                [self showContextualThought:[self voiceLine:@"proud"]];
+                [self rememberEvent:@"focus milestone" detail:[NSString stringWithFormat:@"%@ helped keep focus for %.0f minutes.", [self characterName], self.focusSessionSeconds / 60.0]];
+            }
         } else if ([self.mode isEqualToString:@"companion"]) {
             self.energy = Clamp(self.energy - 0.28, 0, 100);
             self.curiosity = Clamp(self.curiosity + 0.2, 0, 100);
             self.attentionNeed = Clamp(self.attentionNeed + (idleMinutes > 5 ? 0.28 : 0.12), 0, 100);
+            self.comfort = Clamp(self.comfort + (idleMinutes > 12 ? -0.16 : 0.04), 0, 100);
+            if (self.focusSessionSeconds > 0) {
+                self.bestFocusSeconds = MAX(self.bestFocusSeconds, self.focusSessionSeconds);
+                self.focusSessionSeconds = 0;
+            }
+        } else if ([self.mode isEqualToString:@"dnd"]) {
+            self.attentionNeed = Clamp(self.attentionNeed - 0.08, 0, 100);
+            self.comfort = Clamp(self.comfort + 0.02, 0, 100);
         }
         self.trust = Clamp(self.trust + (self.bond > 25 ? 0.04 : 0), 0, 100);
         [self saveState];
@@ -330,7 +378,10 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     self.nextAutonomy -= 1.0 / 60.0;
     if (self.nextAutonomy <= 0) {
         self.nextAutonomy = Rand(120, 300);
-        if (self.attentionNeed > 62) {
+        if (self.energy < 18 || self.comfort < 22) {
+            self.mood = @"sleepy";
+            [self showContextualThought:[self voiceLine:@"attention"]];
+        } else if (self.attentionNeed > 62) {
             self.mood = @"curious";
             self.actionPulse = 0.34;
             [self showContextualThought:[self voiceLine:@"attention"]];
@@ -343,9 +394,9 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
         }
     }
 
-    if (self.nextAIThought <= 0) {
-        self.nextAIThought = Rand(240, 520);
-        [self maybeRequestAIThought];
+    if (self.nextAutonomousThought <= 0) {
+        self.nextAutonomousThought = Rand(240, 520);
+        [self maybeShowAutonomousThought];
     }
 
     if (frameCounter % 210 == 0 && [self.mode isEqualToString:@"companion"] && !self.dragging && arc4random_uniform(100) < 60) {
@@ -416,6 +467,8 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     self.bond = Clamp(self.bond + 1.0, 0, 100);
     self.trust = Clamp(self.trust + 0.6, 0, 100);
     self.attentionNeed = Clamp(self.attentionNeed - 18, 0, 100);
+    self.comfort = Clamp(self.comfort + 3.0, 0, 100);
+    self.dailyPetCount += 1;
     self.lastInteractionAt = NSDate.date.timeIntervalSince1970;
     self.mood = @"curious";
     self.actionPulse = 0.55;
@@ -446,7 +499,7 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     CGFloat dragDistance = hypot(current.x - self.lastDragScreenPoint.x, current.y - self.lastDragScreenPoint.y);
     if (dragDistance > 8) {
         CGFloat shakeGain = Clamp((dragDistance - 8) / 42.0, 0.16, 1.35);
-        self.shakePulse = Clamp(MAX(self.shakePulse, shakeGain) + dragDistance / 260.0, 0, 1.55);
+        self.shakePulse = Clamp(MAX(self.shakePulse, shakeGain) + dragDistance / 260.0 * self.motionIntensity, 0, 1.55 * self.motionIntensity);
     }
     [self updateDragSpinWithPoint:current];
     self.lastDragScreenPoint = current;
@@ -481,10 +534,25 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     if (fabs(self.dragAngleTotal) > M_PI * 1.45) {
         self.spinPulse = 1.0;
         self.spinDirection = self.dragAngleTotal >= 0 ? 1.0 : -1.0;
-        self.shakePulse = 1.55;
+        self.shakePulse = 1.55 * self.motionIntensity;
         self.dragAngleTotal = 0;
         self.hasDragAngle = NO;
     }
+}
+
+- (void)maybeReactToScreenEdge {
+    NSScreen *screen = self.window.screen ?: NSScreen.mainScreen;
+    NSRect sprite = [self visibleSpriteRectForWindowFrame:self.window.frame];
+    CGFloat margin = 18;
+    BOOL nearEdge = fabs(NSMinX(sprite) - NSMinX(screen.frame)) < margin ||
+                    fabs(NSMaxX(sprite) - NSMaxX(screen.frame)) < margin ||
+                    fabs(NSMinY(sprite) - NSMinY(screen.frame)) < margin ||
+                    fabs(NSMaxY(sprite) - NSMaxY(screen.frame)) < margin;
+    if (!nearEdge || [self.mode isEqualToString:@"dnd"]) return;
+    self.comfort = Clamp(self.comfort + 0.8, 0, 100);
+    self.curiosity = Clamp(self.curiosity + 0.8, 0, 100);
+    [self showContextualThought:[self voiceLine:@"companion"]];
+    [self rememberEvent:@"edge perch" detail:[NSString stringWithFormat:@"%@ was placed on a screen edge.", [self characterName]]];
 }
 
 - (void)mouseUp:(NSEvent *)event {
@@ -497,6 +565,13 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
         self.mood = @"startled";
         self.actionPulse = 0.9;
         [self burst:@"dust" count:6];
+        [self maybeReactToScreenEdge];
+        if (self.shakePulse > 1.15 || self.spinPulse > 0.35) {
+            self.energy = Clamp(self.energy - 0.5, 0, 100);
+            self.curiosity = Clamp(self.curiosity + 2.0, 0, 100);
+            [self showContextualThought:[self voiceLine:@"flick"]];
+            [self rememberEvent:@"playful drag" detail:[NSString stringWithFormat:@"%@ got spun or shaken during a drag.", [self characterName]]];
+        }
         [self saveState];
         return;
     }
@@ -564,10 +639,8 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 
     [menu addItem:NSMenuItem.separatorItem];
     [menu addItem:[self menuItem:@"Reset Position" selector:@selector(resetPosition:)]];
+    [menu addItem:[self menuItem:@"Settings..." selector:@selector(showSettings:)]];
     [menu addItem:[self menuItem:[NSString stringWithFormat:@"About %@", [self characterName]] selector:@selector(aboutCharacter:)]];
-    NSMenuItem *aiItem = [self menuItem:self.aiEnabled ? @"AI Thoughts: On" : @"AI Thoughts: Off" selector:@selector(toggleAIThoughts:)];
-    aiItem.state = self.aiEnabled ? NSControlStateValueOn : NSControlStateValueOff;
-    [menu addItem:aiItem];
     [menu addItem:NSMenuItem.separatorItem];
     NSMenuItem *quit = [[NSMenuItem alloc] initWithTitle:@"Quit DesktopPet" action:@selector(terminate:) keyEquivalent:@"q"];
     quit.target = NSApp;
@@ -597,6 +670,7 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     self.bond = Clamp(self.bond + 0.6, 0, 100);
     self.trust = Clamp(self.trust + 0.35, 0, 100);
     self.attentionNeed = Clamp(self.attentionNeed - 10, 0, 100);
+    self.comfort = Clamp(self.comfort + 1.2, 0, 100);
     self.lastInteractionAt = NSDate.date.timeIntervalSince1970;
     self.mood = @"curious";
     self.actionPulse = 0.28;
@@ -613,6 +687,7 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     self.trust = Clamp(self.trust + 0.55, 0, 100);
     self.curiosity = Clamp(self.curiosity + 4, 0, 100);
     self.attentionNeed = Clamp(self.attentionNeed - 16, 0, 100);
+    self.comfort = Clamp(self.comfort + 1.8, 0, 100);
     self.lastInteractionAt = NSDate.date.timeIntervalSince1970;
     self.energy = Clamp(self.energy - 1.0, 0, 100);
     self.mood = @"playful";
@@ -642,6 +717,14 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 }
 
 - (void)enterMode:(NSString *)mode {
+    if ([self.mode isEqualToString:@"study"] && ![mode isEqualToString:@"study"]) {
+        self.bestFocusSeconds = MAX(self.bestFocusSeconds, self.focusSessionSeconds);
+        if (self.focusSessionSeconds >= 300) {
+            [self showContextualThought:[self voiceLine:@"proud"]];
+            [self rememberEvent:@"study session" detail:[NSString stringWithFormat:@"Study session lasted %.0f minutes.", self.focusSessionSeconds / 60.0] force:YES];
+        }
+        self.focusSessionSeconds = 0;
+    }
     self.mode = mode;
     if ([mode isEqualToString:@"study"]) {
         self.mood = @"focused";
@@ -678,10 +761,115 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     self.actionPulse = 0.45;
 }
 
-- (IBAction)toggleAIThoughts:(id)sender {
-    self.aiEnabled = !self.aiEnabled;
-    [self showContextualThought:self.aiEnabled ? [self voiceLine:@"companion"] : [self voiceLine:@"dnd"]];
+- (IBAction)showSettings:(id)sender {
+    if (self.settingsPanel) {
+        [self.settingsPanel orderFrontRegardless];
+        return;
+    }
+
+    NSRect frame = NSMakeRect(NSMaxX(self.window.frame) + 10, NSMaxY(self.window.frame) - 330, 286, 330);
+    self.settingsPanel = [[NSPanel alloc] initWithContentRect:frame
+                                                    styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskUtilityWindow
+                                                      backing:NSBackingStoreBuffered
+                                                        defer:NO];
+    self.settingsPanel.title = @"DesktopPet";
+    self.settingsPanel.releasedWhenClosed = NO;
+    self.settingsPanel.level = NSFloatingWindowLevel;
+
+    NSView *content = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 286, 330)];
+    self.settingsPanel.contentView = content;
+
+    [content addSubview:[self settingsLabel:[NSString stringWithFormat:@"%@\n%@", [self characterName], [self characterSubtitle]]
+                                      frame:NSMakeRect(18, 272, 250, 42)
+                                       font:[NSFont systemFontOfSize:15 weight:NSFontWeightBold]]];
+    [content addSubview:[self settingsLabel:[NSString stringWithFormat:@"Bond %.0f  Comfort %.0f  Energy %.0f", self.bond, self.comfort, self.energy]
+                                      frame:NSMakeRect(18, 245, 250, 22)
+                                       font:[NSFont systemFontOfSize:12 weight:NSFontWeightMedium]]];
+    [content addSubview:[self settingsLabel:[NSString stringWithFormat:@"Focus today %.0fm  Best %.0fm", self.dailyStudySeconds / 60.0, self.bestFocusSeconds / 60.0]
+                                      frame:NSMakeRect(18, 224, 250, 22)
+                                       font:[NSFont systemFontOfSize:12 weight:NSFontWeightMedium]]];
+
+    [content addSubview:[self settingsLabel:@"Mode" frame:NSMakeRect(18, 195, 80, 20) font:[NSFont systemFontOfSize:12 weight:NSFontWeightSemibold]]];
+    NSArray *modes = @[@[@"Companion", @"companion"], @[@"Study", @"study"], @[@"DND", @"dnd"]];
+    for (NSInteger i = 0; i < modes.count; i++) {
+        NSButton *button = [self settingsButton:modes[i][0] frame:NSMakeRect(18 + i * 84, 168, 76, 26) action:@selector(settingsChooseMode:)];
+        button.identifier = modes[i][1];
+        [content addSubview:button];
+    }
+
+    [content addSubview:[self settingsLabel:@"Motion" frame:NSMakeRect(18, 135, 80, 20) font:[NSFont systemFontOfSize:12 weight:NSFontWeightSemibold]]];
+    NSArray *motions = @[@[@"Gentle", @0.65], @[@"Normal", @1.0], @[@"Bouncy", @1.45]];
+    for (NSInteger i = 0; i < motions.count; i++) {
+        NSButton *button = [self settingsButton:motions[i][0] frame:NSMakeRect(18 + i * 84, 108, 76, 26) action:@selector(settingsChooseMotion:)];
+        button.tag = (NSInteger)lround([motions[i][1] doubleValue] * 100);
+        [content addSubview:button];
+    }
+
+    [content addSubview:[self settingsButton:@"Show Memory" frame:NSMakeRect(18, 66, 118, 28) action:@selector(showMemorySummary:)]];
+    [content addSubview:[self settingsButton:@"Reset Memory" frame:NSMakeRect(150, 66, 118, 28) action:@selector(resetMemory:)]];
+    [content addSubview:[self settingsButton:@"Close" frame:NSMakeRect(96, 22, 94, 28) action:@selector(closeSettings:)]];
+
+    [self.settingsPanel orderFrontRegardless];
+}
+
+- (NSTextField *)settingsLabel:(NSString *)text frame:(NSRect)frame font:(NSFont *)font {
+    NSTextField *label = [[NSTextField alloc] initWithFrame:frame];
+    label.stringValue = text;
+    label.font = font;
+    label.textColor = [NSColor colorWithCalibratedWhite:0.12 alpha:0.88];
+    label.backgroundColor = NSColor.clearColor;
+    label.bezeled = NO;
+    label.editable = NO;
+    label.selectable = NO;
+    label.drawsBackground = NO;
+    return label;
+}
+
+- (NSButton *)settingsButton:(NSString *)title frame:(NSRect)frame action:(SEL)action {
+    NSButton *button = [[NSButton alloc] initWithFrame:frame];
+    button.title = title;
+    button.bezelStyle = NSBezelStyleRounded;
+    button.target = self;
+    button.action = action;
+    return button;
+}
+
+- (IBAction)settingsChooseMode:(NSButton *)sender {
+    [self enterMode:sender.identifier ?: @"companion"];
+}
+
+- (IBAction)settingsChooseMotion:(NSButton *)sender {
+    self.motionIntensity = Clamp(sender.tag / 100.0, 0.5, 1.6);
+    [self showContextualThought:self.motionIntensity > 1.1 ? [self voiceLine:@"flick"] : [self voiceLine:@"companion"]];
     [self saveState];
+}
+
+- (IBAction)showMemorySummary:(id)sender {
+    NSDictionary *last = self.memories.lastObject;
+    NSString *text = last ? [NSString stringWithFormat:@"%@: %@", last[@"title"], last[@"detail"]] : [self voiceLine:@"memory"];
+    [self showContextualThought:[self voiceLine:@"memory"]];
+    NSAlert *alert = [NSAlert new];
+    alert.messageText = @"DesktopPet Memory";
+    alert.informativeText = text;
+    [alert addButtonWithTitle:@"OK"];
+    [alert runModal];
+}
+
+- (IBAction)resetMemory:(id)sender {
+    [self.memories removeAllObjects];
+    self.focusSessionSeconds = 0;
+    self.bestFocusSeconds = 0;
+    self.dailyStudySeconds = 0;
+    self.dailyPetCount = 0;
+    self.dailyReturnCount = 0;
+    self.appSwitches = 0;
+    [self showContextualThought:@"memory cleared"];
+    [self saveState];
+}
+
+- (IBAction)closeSettings:(id)sender {
+    [self.settingsPanel close];
+    self.settingsPanel = nil;
 }
 
 - (NSMenuItem *)menuItem:(NSString *)title selector:(SEL)selector {
@@ -802,6 +990,7 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     [self drawShadowBelow:rect lift:extraY];
     if ([self.mode isEqualToString:@"companion"]) [self drawCompanionMagicAround:rect];
     if ([self.mode isEqualToString:@"study"]) [self drawStudyAuraAround:rect];
+    [self drawCharacterFlavorAround:rect];
 
     [NSGraphicsContext saveGraphicsState];
     NSAffineTransform *transform = [NSAffineTransform transform];
@@ -867,6 +1056,50 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     }
 }
 
+- (void)drawCharacterFlavorAround:(NSRect)rect {
+    if ([self.mode isEqualToString:@"dnd"]) return;
+    NSColor *accent = [self accentColor];
+    NSColor *secondary = [self secondaryColor];
+    CGFloat t = self.tick;
+    if ([self.characterId isEqualToString:@"pippaOrbitpaw"]) {
+        [[accent colorWithAlphaComponent:0.16 + fabs(sin(t * 2.2)) * 0.08] setStroke];
+        NSBezierPath *scan = [NSBezierPath bezierPathWithRoundedRect:NSMakeRect(NSMinX(rect) + NSWidth(rect) * 0.12,
+                                                                                 NSMidY(rect) + sin(t * 2.7) * NSHeight(rect) * 0.18,
+                                                                                 NSWidth(rect) * 0.76, 6)
+                                                             xRadius:3 yRadius:3];
+        scan.lineWidth = 1.6;
+        [scan stroke];
+    } else if ([self.characterId isEqualToString:@"lumaMoppet"]) {
+        [[accent colorWithAlphaComponent:0.12] setFill];
+        NSRect left = NSMakeRect(NSMinX(rect) - 10 + sin(t) * 4, NSMinY(rect) + 16, 10, NSHeight(rect) * 0.72);
+        NSRect right = NSMakeRect(NSMaxX(rect) + cos(t) * 4, NSMinY(rect) + 16, 10, NSHeight(rect) * 0.72);
+        [[NSBezierPath bezierPathWithRoundedRect:left xRadius:5 yRadius:5] fill];
+        [[NSBezierPath bezierPathWithRoundedRect:right xRadius:5 yRadius:5] fill];
+    } else if ([self.characterId isEqualToString:@"ossiaNocturne"]) {
+        [[accent colorWithAlphaComponent:0.18 + fabs(sin(t * 1.1)) * 0.08] setStroke];
+        NSBezierPath *flame = [NSBezierPath bezierPathWithOvalInRect:NSInsetRect(rect, -5, -4)];
+        flame.lineWidth = 1.4;
+        [flame stroke];
+    } else if ([self.characterId isEqualToString:@"velvetHowl"]) {
+        for (NSInteger i = 0; i < 3; i++) {
+            CGFloat angle = t * 0.9 + i * 2.0;
+            NSPoint p = NSMakePoint(NSMidX(rect) + cos(angle) * NSWidth(rect) * 0.36,
+                                    NSMidY(rect) + sin(angle) * NSHeight(rect) * 0.27);
+            [@"♡" drawAtPoint:p withAttributes:@{
+                NSFontAttributeName: [NSFont systemFontOfSize:10 weight:NSFontWeightBold],
+                NSForegroundColorAttributeName: [accent colorWithAlphaComponent:0.28]
+            }];
+        }
+    } else if ([self.characterId isEqualToString:@"mochiCloudlet"]) {
+        [[secondary colorWithAlphaComponent:0.14] setFill];
+        for (NSInteger i = 0; i < 3; i++) {
+            CGFloat x = NSMinX(rect) + NSWidth(rect) * (0.18 + i * 0.24) + sin(t + i) * 3;
+            CGFloat y = NSMinY(rect) + 6 + cos(t * 0.8 + i) * 2;
+            [[NSBezierPath bezierPathWithOvalInRect:NSMakeRect(x, y, 18, 9)] fill];
+        }
+    }
+}
+
 - (void)showContextualThought:(NSString *)text {
     if ([self.mode isEqualToString:@"dnd"]) return;
     self.thought = text;
@@ -875,7 +1108,16 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 
 - (void)refreshContext {
     NSRunningApplication *frontmost = NSWorkspace.sharedWorkspace.frontmostApplication;
-    self.activeAppName = frontmost.localizedName ?: @"Unknown";
+    NSString *newAppName = frontmost.localizedName ?: @"Unknown";
+    if (self.lastActiveAppName.length > 0 && ![newAppName isEqualToString:self.lastActiveAppName]) {
+        self.appSwitches += 1;
+        self.curiosity = Clamp(self.curiosity + 0.4, 0, 100);
+        if ([self.mode isEqualToString:@"study"] && self.appSwitches % 8 == 0) {
+            [self showContextualThought:[self voiceLine:@"study"]];
+        }
+    }
+    self.activeAppName = newAppName;
+    self.lastActiveAppName = newAppName;
 
     NSInteger hour = [[NSCalendar currentCalendar] component:NSCalendarUnitHour fromDate:NSDate.date];
     if (hour < 5) self.dayPhase = @"late night";
@@ -883,6 +1125,35 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     else if (hour < 17) self.dayPhase = @"afternoon";
     else if (hour < 22) self.dayPhase = @"evening";
     else self.dayPhase = @"night";
+
+    [self rollDailyMemoryIfNeeded];
+}
+
+- (NSString *)currentDailyKey {
+    NSDateFormatter *formatter = [NSDateFormatter new];
+    formatter.dateFormat = @"yyyy-MM-dd";
+    return [formatter stringFromDate:NSDate.date];
+}
+
+- (void)rollDailyMemoryIfNeeded {
+    NSString *today = [self currentDailyKey];
+    if (self.dailyKey.length == 0) {
+        self.dailyKey = today;
+        return;
+    }
+    if ([today isEqualToString:self.dailyKey]) return;
+
+    if (self.dailyStudySeconds > 0 || self.dailyPetCount > 0 || self.dailyReturnCount > 0) {
+        NSString *detail = [NSString stringWithFormat:@"Yesterday: %.0f focus minutes, %.0f pets, %.0f returns.",
+                            self.dailyStudySeconds / 60.0, self.dailyPetCount, self.dailyReturnCount];
+        [self rememberEvent:@"daily memory" detail:detail force:YES];
+    }
+    self.dailyKey = today;
+    self.dailyStudySeconds = 0;
+    self.dailyPetCount = 0;
+    self.dailyReturnCount = 0;
+    self.appSwitches = 0;
+    [self saveState];
 }
 
 - (NSTimeInterval)idleSeconds {
@@ -905,9 +1176,33 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     return seconds;
 }
 
+- (void)updateReturnAwareness {
+    NSTimeInterval idle = [self idleSeconds];
+    if (idle > 600) {
+        self.wasIdleAway = YES;
+        return;
+    }
+    if (self.wasIdleAway && idle < 30) {
+        self.wasIdleAway = NO;
+        self.dailyReturnCount += 1;
+        self.attentionNeed = Clamp(self.attentionNeed - 8, 0, 100);
+        self.comfort = Clamp(self.comfort + 2.0, 0, 100);
+        if (![self.mode isEqualToString:@"dnd"]) {
+            [self showContextualThought:[self voiceLine:@"return"]];
+            [self burst:@"sparkle" count:5];
+        }
+        [self rememberEvent:@"return" detail:[NSString stringWithFormat:@"You came back while %@ was waiting.", [self characterName]]];
+        [self saveState];
+    }
+}
+
 - (void)rememberEvent:(NSString *)title detail:(NSString *)detail {
+    [self rememberEvent:title detail:detail force:NO];
+}
+
+- (void)rememberEvent:(NSString *)title detail:(NSString *)detail force:(BOOL)force {
     NSTimeInterval now = NSDate.date.timeIntervalSince1970;
-    if (now - self.lastMemoryAt < 120 && ![title isEqualToString:@"study focus"]) return;
+    if (!force && now - self.lastMemoryAt < 120 && ![title isEqualToString:@"study focus"]) return;
     self.lastMemoryAt = now;
 
     NSDictionary *memory = @{
@@ -945,101 +1240,11 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     return [self voiceLine:@"companion"];
 }
 
-- (void)maybeRequestAIThought {
-    if (!self.aiEnabled || self.aiRequestInFlight || [self.mode isEqualToString:@"dnd"]) {
-        if (self.attentionNeed > 56 || [self.mode isEqualToString:@"study"] || [self idleSeconds] > 900) {
-            [self showContextualThought:[self localContextThought]];
-        }
-        return;
+- (void)maybeShowAutonomousThought {
+    if ([self.mode isEqualToString:@"dnd"]) return;
+    if (self.attentionNeed > 56 || [self.mode isEqualToString:@"study"] || [self idleSeconds] > 900 || self.appSwitches > 10) {
+        [self showContextualThought:[self localContextThought]];
     }
-
-    NSString *apiKey = [self openAIAPIKey];
-    if (apiKey.length == 0) {
-        self.aiEnabled = NO;
-        return;
-    }
-
-    self.aiRequestInFlight = YES;
-    NSDictionary *payload = [self aiPayload];
-    NSError *jsonError = nil;
-    NSData *body = [NSJSONSerialization dataWithJSONObject:payload options:0 error:&jsonError];
-    if (!body || jsonError) {
-        self.aiRequestInFlight = NO;
-        return;
-    }
-
-    NSURL *url = [NSURL URLWithString:@"https://api.openai.com/v1/responses"];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    request.HTTPMethod = @"POST";
-    [request setValue:[NSString stringWithFormat:@"Bearer %@", apiKey] forHTTPHeaderField:@"Authorization"];
-    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    request.HTTPBody = body;
-
-    NSURLSessionDataTask *task = [NSURLSession.sharedSession dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSString *thought = nil;
-        if (data && !error) {
-            thought = [self parseAIThought:data];
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.aiRequestInFlight = NO;
-            if (thought.length > 0) {
-                self.lastAIThought = thought;
-                [self showContextualThought:thought];
-                [self rememberEvent:@"ai thought" detail:thought];
-                [self saveState];
-            } else if (self.attentionNeed > 56 || [self.mode isEqualToString:@"study"] || [self idleSeconds] > 900) {
-                [self showContextualThought:[self localContextThought]];
-            }
-        });
-    }];
-    [task resume];
-}
-
-- (NSString *)openAIAPIKey {
-    NSString *key = [NSUserDefaults.standardUserDefaults stringForKey:@"OpenAIAPIKey"];
-    if (key.length > 0) return key;
-    key = NSProcessInfo.processInfo.environment[@"OPENAI_API_KEY"];
-    return key ?: @"";
-}
-
-- (NSDictionary *)aiPayload {
-    NSString *state = [NSString stringWithFormat:
-        @"%@ is a tiny desktop companion: %@. No screenshots are available. Context: mode=%@, mood=%@, activeApp=%@, dayPhase=%@, idleSeconds=%.0f, bond=%.0f, trust=%.0f, curiosity=%.0f, attentionNeed=%.0f, energy=%.0f, focusStreak=%ld. Write one cute thought under 5 words. No advice, no questions unless attentionNeed is high.",
-        [self characterName], [self characterPrompt], self.mode, self.mood, self.activeAppName, self.dayPhase, [self idleSeconds], self.bond, self.trust, self.curiosity, self.attentionNeed, self.energy, (long)self.focusStreak];
-
-    return @{
-        @"model": @"gpt-4.1-mini",
-        @"input": @[
-            @{@"role": @"system", @"content": [NSString stringWithFormat:@"You are %@'s tiny inner voice. Output only one short whimsical thought, 2-5 words.", [self characterName]]},
-            @{@"role": @"user", @"content": state}
-        ],
-        @"max_output_tokens": @20
-    };
-}
-
-- (NSString *)parseAIThought:(NSData *)data {
-    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    if (![json isKindOfClass:NSDictionary.class]) return nil;
-    NSString *direct = json[@"output_text"];
-    if ([direct isKindOfClass:NSString.class] && direct.length > 0) return [self cleanedThought:direct];
-
-    NSArray *output = json[@"output"];
-    for (NSDictionary *item in output) {
-        NSArray *content = item[@"content"];
-        for (NSDictionary *part in content) {
-            NSString *text = part[@"text"];
-            if ([text isKindOfClass:NSString.class] && text.length > 0) return [self cleanedThought:text];
-        }
-    }
-    return nil;
-}
-
-- (NSString *)cleanedThought:(NSString *)thought {
-    NSString *trimmed = [thought stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
-    trimmed = [trimmed stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-    NSArray *words = [trimmed componentsSeparatedByCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
-    if (words.count <= 5) return trimmed;
-    return [[words subarrayWithRange:NSMakeRange(0, 5)] componentsJoinedByString:@" "];
 }
 
 - (void)drawThoughtIfNeeded {
@@ -1125,8 +1330,17 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     self.curiosity = [defaults objectForKey:@"nebulaCuriosity"] ? [defaults doubleForKey:@"nebulaCuriosity"] : self.curiosity;
     self.attentionNeed = [defaults objectForKey:@"nebulaAttentionNeed"] ? [defaults doubleForKey:@"nebulaAttentionNeed"] : self.attentionNeed;
     self.trust = [defaults objectForKey:@"nebulaTrust"] ? [defaults doubleForKey:@"nebulaTrust"] : self.trust;
+    self.comfort = [defaults objectForKey:@"companionComfort"] ? [defaults doubleForKey:@"companionComfort"] : self.comfort;
     self.focusAffinity = [defaults objectForKey:@"nebulaFocusAffinity"] ? [defaults doubleForKey:@"nebulaFocusAffinity"] : self.focusAffinity;
-    self.aiEnabled = [defaults boolForKey:@"nebulaAIEnabled"];
+    self.motionIntensity = [defaults objectForKey:@"companionMotionIntensity"] ? [defaults doubleForKey:@"companionMotionIntensity"] : self.motionIntensity;
+    self.motionIntensity = Clamp(self.motionIntensity, 0.5, 1.6);
+    self.focusSessionSeconds = [defaults doubleForKey:@"companionFocusSessionSeconds"];
+    self.bestFocusSeconds = [defaults doubleForKey:@"companionBestFocusSeconds"];
+    self.dailyStudySeconds = [defaults doubleForKey:@"companionDailyStudySeconds"];
+    self.dailyPetCount = [defaults doubleForKey:@"companionDailyPetCount"];
+    self.dailyReturnCount = [defaults doubleForKey:@"companionDailyReturnCount"];
+    self.appSwitches = [defaults integerForKey:@"companionAppSwitches"];
+    self.dailyKey = [defaults stringForKey:@"companionDailyKey"] ?: [self currentDailyKey];
     NSArray *savedMemories = [defaults arrayForKey:@"nebulaMemories"];
     if (savedMemories) self.memories = [savedMemories mutableCopy];
 
@@ -1147,9 +1361,17 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     [defaults setDouble:self.curiosity forKey:@"nebulaCuriosity"];
     [defaults setDouble:self.attentionNeed forKey:@"nebulaAttentionNeed"];
     [defaults setDouble:self.trust forKey:@"nebulaTrust"];
+    [defaults setDouble:self.comfort forKey:@"companionComfort"];
     [defaults setDouble:self.focusAffinity forKey:@"nebulaFocusAffinity"];
+    [defaults setDouble:self.motionIntensity forKey:@"companionMotionIntensity"];
+    [defaults setDouble:self.focusSessionSeconds forKey:@"companionFocusSessionSeconds"];
+    [defaults setDouble:self.bestFocusSeconds forKey:@"companionBestFocusSeconds"];
+    [defaults setDouble:self.dailyStudySeconds forKey:@"companionDailyStudySeconds"];
+    [defaults setDouble:self.dailyPetCount forKey:@"companionDailyPetCount"];
+    [defaults setDouble:self.dailyReturnCount forKey:@"companionDailyReturnCount"];
+    [defaults setInteger:self.appSwitches forKey:@"companionAppSwitches"];
+    [defaults setObject:self.dailyKey ?: [self currentDailyKey] forKey:@"companionDailyKey"];
     [defaults setInteger:self.focusStreak forKey:@"nebulaFocusStreak"];
-    [defaults setBool:self.aiEnabled forKey:@"nebulaAIEnabled"];
     [defaults setObject:self.memories forKey:@"nebulaMemories"];
     [defaults setDouble:NSDate.date.timeIntervalSince1970 forKey:@"nebulaLastActiveAt"];
     if (self.window) {
