@@ -169,6 +169,8 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 @property CGFloat tick;
 @property CGFloat actionPulse;
 @property CGFloat shakePulse;
+@property CGFloat spinPulse;
+@property CGFloat spinDirection;
 @property CGFloat thoughtAlpha;
 @property CGFloat behaviorUntil;
 @property CGFloat nextAutonomy;
@@ -180,10 +182,13 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 @property CGFloat petAngleTotal;
 @property CGFloat petMotionStartedAt;
 @property CGFloat petCooldownUntil;
+@property CGFloat lastDragAngle;
+@property CGFloat dragAngleTotal;
 @property BOOL dragging;
 @property BOOL aiEnabled;
 @property BOOL aiRequestInFlight;
 @property BOOL hasPetAngle;
+@property BOOL hasDragAngle;
 @property NSPoint dragStart;
 @property NSPoint clickStart;
 @property NSPoint dragStartOnScreen;
@@ -278,7 +283,8 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 - (void)animateFrame {
     self.tick += 1.0 / 60.0;
     self.actionPulse = MAX(0, self.actionPulse - 0.024);
-    self.shakePulse = MAX(0, self.shakePulse - 0.045);
+    self.shakePulse = MAX(0, self.shakePulse - 0.038);
+    self.spinPulse = MAX(0, self.spinPulse - 0.022);
     self.thoughtAlpha = MAX(0, self.thoughtAlpha - 0.006);
     self.behaviorUntil = MAX(0, self.behaviorUntil - 1.0 / 60.0);
     self.nextContextCheck -= 1.0 / 60.0;
@@ -424,6 +430,8 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     self.dragStart = self.clickStart;
     self.dragStartOnScreen = NSEvent.mouseLocation;
     self.lastDragScreenPoint = self.dragStartOnScreen;
+    self.hasDragAngle = NO;
+    self.dragAngleTotal = 0;
     self.originalFrame = self.window.frame;
     self.targetFrame = self.originalFrame;
     self.dragging = NSPointInRect(self.dragStart, NSInsetRect([self spriteBaseRect], -28, -28));
@@ -436,9 +444,11 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     if (!self.dragging || !self.window) return;
     NSPoint current = NSEvent.mouseLocation;
     CGFloat dragDistance = hypot(current.x - self.lastDragScreenPoint.x, current.y - self.lastDragScreenPoint.y);
-    if (dragDistance > 14) {
-        self.shakePulse = Clamp(self.shakePulse + dragDistance / 120.0, 0, 1);
+    if (dragDistance > 8) {
+        CGFloat shakeGain = Clamp((dragDistance - 8) / 42.0, 0.16, 1.35);
+        self.shakePulse = Clamp(MAX(self.shakePulse, shakeGain) + dragDistance / 260.0, 0, 1.55);
     }
+    [self updateDragSpinWithPoint:current];
     self.lastDragScreenPoint = current;
 
     NSRect frame = self.originalFrame;
@@ -446,6 +456,35 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     frame.origin.y += current.y - self.dragStartOnScreen.y;
     self.targetFrame = [self clampedFrame:frame];
     [self.window setFrame:self.targetFrame display:YES];
+}
+
+- (void)updateDragSpinWithPoint:(NSPoint)point {
+    CGFloat dx = point.x - self.dragStartOnScreen.x;
+    CGFloat dy = point.y - self.dragStartOnScreen.y;
+    CGFloat radius = hypot(dx, dy);
+    if (radius < 42) return;
+
+    CGFloat angle = atan2(dy, dx);
+    if (!self.hasDragAngle) {
+        self.hasDragAngle = YES;
+        self.lastDragAngle = angle;
+        self.dragAngleTotal = 0;
+        return;
+    }
+
+    CGFloat delta = angle - self.lastDragAngle;
+    while (delta > M_PI) delta -= M_PI * 2;
+    while (delta < -M_PI) delta += M_PI * 2;
+    self.dragAngleTotal += delta;
+    self.lastDragAngle = angle;
+
+    if (fabs(self.dragAngleTotal) > M_PI * 1.45) {
+        self.spinPulse = 1.0;
+        self.spinDirection = self.dragAngleTotal >= 0 ? 1.0 : -1.0;
+        self.shakePulse = 1.55;
+        self.dragAngleTotal = 0;
+        self.hasDragAngle = NO;
+    }
 }
 
 - (void)mouseUp:(NSEvent *)event {
@@ -745,10 +784,19 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 
     if (self.shakePulse > 0.01) {
         CGFloat shake = sin(self.tick * 34.0) * self.shakePulse;
-        rotation += shake * 7.0;
-        extraY += cos(self.tick * 42.0) * self.shakePulse * 2.6;
-        scaleX += self.shakePulse * 0.025;
-        scaleY -= self.shakePulse * 0.018;
+        rotation += shake * 10.5;
+        extraY += cos(self.tick * 42.0) * self.shakePulse * 4.2;
+        scaleX += self.shakePulse * 0.035;
+        scaleY -= self.shakePulse * 0.026;
+    }
+
+    if (self.spinPulse > 0.01) {
+        CGFloat progress = 1.0 - self.spinPulse;
+        CGFloat eased = 1.0 - pow(1.0 - progress, 3.0);
+        rotation += self.spinDirection * eased * 360.0;
+        extraY += sin(progress * M_PI) * 8.0;
+        scaleX += sin(progress * M_PI) * 0.045;
+        scaleY -= sin(progress * M_PI) * 0.03;
     }
 
     [self drawShadowBelow:rect lift:extraY];
