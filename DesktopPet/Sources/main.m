@@ -202,6 +202,10 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 @property CGFloat nextAutonomy;
 @property CGFloat nextContextCheck;
 @property CGFloat nextAutonomousThought;
+@property CGFloat stateAccumulator;
+@property CGFloat magicAccumulator;
+@property CGFloat lastFrameTime;
+@property CGFloat timerInterval;
 @property CGFloat lastInteractionAt;
 @property CGFloat lastMemoryAt;
 @property CGFloat lastPetAngle;
@@ -267,6 +271,7 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     self.nextAutonomy = Rand(120, 300);
     self.nextContextCheck = 0;
     self.nextAutonomousThought = Rand(180, 360);
+    self.timerInterval = 0;
     self.lastInteractionAt = NSDate.date.timeIntervalSince1970;
     [self loadState];
     [self refreshContext];
@@ -294,9 +299,40 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 }
 
 - (void)startTimer {
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 / 60.0 repeats:YES block:^(NSTimer *timer) {
+    self.lastFrameTime = NSDate.date.timeIntervalSince1970;
+    [self scheduleTimerWithInterval:[self desiredTimerInterval]];
+}
+
+- (void)scheduleTimerWithInterval:(CGFloat)interval {
+    [self.timer invalidate];
+    self.timerInterval = interval;
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:interval repeats:YES block:^(NSTimer *timer) {
         [self animateFrame];
     }];
+    self.timer.tolerance = interval * 0.35;
+}
+
+- (CGFloat)desiredTimerInterval {
+    if ([self shouldUseFastTimer]) return 1.0 / 30.0;
+    if ([self.mode isEqualToString:@"dnd"]) return 0.5;
+    if ([self.mode isEqualToString:@"study"]) return 0.25;
+    return 0.2;
+}
+
+- (BOOL)shouldUseFastTimer {
+    return self.dragging ||
+           self.particles.count > 0 ||
+           self.actionPulse > 0.01 ||
+           self.shakePulse > 0.01 ||
+           self.spinPulse > 0.01 ||
+           self.thoughtAlpha > 0.02;
+}
+
+- (void)rescheduleTimerIfNeeded {
+    CGFloat desired = [self desiredTimerInterval];
+    if (fabs(desired - self.timerInterval) > 0.01) {
+        [self scheduleTimerWithInterval:desired];
+    }
 }
 
 - (void)updateTrackingAreas {
@@ -310,29 +346,34 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 }
 
 - (void)animateFrame {
-    self.tick += 1.0 / 60.0;
-    self.actionPulse = MAX(0, self.actionPulse - 0.024);
-    self.shakePulse = MAX(0, self.shakePulse - 0.038);
-    self.spinPulse = MAX(0, self.spinPulse - 0.022);
-    self.thoughtAlpha = MAX(0, self.thoughtAlpha - 0.006);
-    self.behaviorUntil = MAX(0, self.behaviorUntil - 1.0 / 60.0);
-    self.nextContextCheck -= 1.0 / 60.0;
-    self.nextAutonomousThought -= 1.0 / 60.0;
+    CGFloat now = NSDate.date.timeIntervalSince1970;
+    CGFloat dt = self.lastFrameTime > 0 ? Clamp(now - self.lastFrameTime, 0.001, 0.25) : self.timerInterval;
+    self.lastFrameTime = now;
+    self.tick += dt;
+    self.actionPulse = MAX(0, self.actionPulse - 1.44 * dt);
+    self.shakePulse = MAX(0, self.shakePulse - 2.28 * dt);
+    self.spinPulse = MAX(0, self.spinPulse - 1.32 * dt);
+    self.thoughtAlpha = MAX(0, self.thoughtAlpha - 0.36 * dt);
+    self.behaviorUntil = MAX(0, self.behaviorUntil - dt);
+    self.nextContextCheck -= dt;
+    self.nextAutonomousThought -= dt;
 
     if (self.nextContextCheck <= 0) {
         [self refreshContext];
         [self updateReturnAwareness];
-        self.nextContextCheck = 8.0;
+        self.nextContextCheck = [self shouldUseFastTimer] ? 12.0 : 30.0;
     }
-    [self updateParticles];
-    [self updateCompanionState];
+    [self updateParticles:dt];
+    [self updateCompanionState:dt];
     self.needsDisplay = YES;
+    [self rescheduleTimerIfNeeded];
 }
 
-- (void)updateCompanionState {
-    static NSInteger frameCounter = 0;
-    frameCounter++;
-    if (frameCounter % 300 == 0) {
+- (void)updateCompanionState:(CGFloat)dt {
+    self.stateAccumulator += dt;
+    self.magicAccumulator += dt;
+    if (self.stateAccumulator >= 5.0) {
+        self.stateAccumulator = 0;
         CGFloat idleMinutes = [self idleSeconds] / 60.0;
         if ([self.mode isEqualToString:@"study"]) {
             self.energy = Clamp(self.energy - 0.18, 0, 100);
@@ -375,7 +416,7 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
         return;
     }
 
-    self.nextAutonomy -= 1.0 / 60.0;
+    self.nextAutonomy -= dt;
     if (self.nextAutonomy <= 0) {
         self.nextAutonomy = Rand(120, 300);
         if (self.energy < 18 || self.comfort < 22) {
@@ -399,7 +440,8 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
         [self maybeShowAutonomousThought];
     }
 
-    if (frameCounter % 210 == 0 && [self.mode isEqualToString:@"companion"] && !self.dragging && arc4random_uniform(100) < 60) {
+    if (self.magicAccumulator >= 18.0 && [self.mode isEqualToString:@"companion"] && !self.dragging && arc4random_uniform(100) < 60) {
+        self.magicAccumulator = 0;
         [self burst:@"sparkle" count:1 + arc4random_uniform(3)];
     }
 }
@@ -1004,7 +1046,7 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
                   operation:NSCompositingOperationSourceOver
                    fraction:[self.mode isEqualToString:@"dnd"] ? 0.88 : 1
              respectFlipped:NO
-                      hints:@{ NSImageHintInterpolation: @(NSImageInterpolationHigh) }];
+                      hints:@{ NSImageHintInterpolation: @(NSImageInterpolationMedium) }];
     [NSGraphicsContext restoreGraphicsState];
 }
 
@@ -1286,14 +1328,14 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
     }
 }
 
-- (void)updateParticles {
+- (void)updateParticles:(CGFloat)dt {
     NSMutableArray *dead = [NSMutableArray array];
     for (NSMutableDictionary *particle in self.particles) {
         NSPoint point = [particle[@"point"] pointValue];
-        point.x += [particle[@"dx"] doubleValue];
-        point.y += [particle[@"dy"] doubleValue];
+        point.x += [particle[@"dx"] doubleValue] * dt * 60.0;
+        point.y += [particle[@"dy"] doubleValue] * dt * 60.0;
         particle[@"point"] = [NSValue valueWithPoint:point];
-        particle[@"life"] = @([particle[@"life"] doubleValue] - 0.018);
+        particle[@"life"] = @([particle[@"life"] doubleValue] - 1.08 * dt);
         if ([particle[@"life"] doubleValue] <= 0) [dead addObject:particle];
     }
     [self.particles removeObjectsInArray:dead];
