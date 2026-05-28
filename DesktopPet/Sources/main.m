@@ -306,17 +306,18 @@ static NSDictionary<NSString *, NSDictionary<NSString *, NSArray<NSString *> *> 
 - (void)scheduleTimerWithInterval:(CGFloat)interval {
     [self.timer invalidate];
     self.timerInterval = interval;
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:interval repeats:YES block:^(NSTimer *timer) {
+    self.timer = [NSTimer timerWithTimeInterval:interval repeats:YES block:^(NSTimer *timer) {
         [self animateFrame];
     }];
-    self.timer.tolerance = interval * 0.35;
+    self.timer.tolerance = [self shouldUseFastTimer] ? interval * 0.08 : interval * 0.15;
+    [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
 }
 
 - (CGFloat)desiredTimerInterval {
     if ([self shouldUseFastTimer]) return 1.0 / 30.0;
-    if ([self.mode isEqualToString:@"dnd"]) return 0.5;
-    if ([self.mode isEqualToString:@"study"]) return 0.25;
-    return 0.2;
+    if ([self.mode isEqualToString:@"dnd"]) return 0.25;
+    if ([self.mode isEqualToString:@"study"]) return 1.0 / 14.0;
+    return 1.0 / 18.0;
 }
 
 - (BOOL)shouldUseFastTimer {
